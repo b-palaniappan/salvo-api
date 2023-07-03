@@ -46,7 +46,7 @@ async fn hello_world(res: &mut Response) -> AppResponse<()> {
 #[tokio::main]
 async fn main() {
     let router = Router::new().get(hello_world);
-    Server::new(TcpListener::bind("127.0.0.1:8080"))
-        .serve(router)
-        .await;
+
+    let acceptor = TcpListener::new("127.0.0.1:5800").bind().await;
+    Server::new(acceptor).serve(router).await;
 }
