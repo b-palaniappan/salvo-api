@@ -2,12 +2,27 @@
 name = "salvo-api"
 version = "0.1.1"
 edition = "2021"
+authors = ["Bala", "bala@c12.io"]
+description = "Salvo is an extremely simple and powerful Rust web backend framework"
+readme = "README.md"
+license = "MIT"
+keywords = ["API", "salvo", "rest-api"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# to Reduce the size of release binary.
+[profile.release]
+strip = true      # Automatically strip symbols from the binary.
+opt-level = "z"   # Optimize for size.
+lto = true
+codegen-units = 1
+panic = "abort"
+
 [dependencies]
-salvo = "^0"
+salvo = { version = "^0", features = ["logging"] }
 tokio = { version = "^1", features = ["macros"] }
 serde = { version = "^1", features = ["derive"] }
 serde_json = "^1"
 chrono = "^0"
+tracing = "^0"
+tracing-subscriber = "^0"

@@ -1,4 +1,5 @@
 use chrono::{SecondsFormat, Utc};
+use salvo::logging::Logger;
 use salvo::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -43,10 +44,26 @@ async fn hello_world(res: &mut Response) -> AppResponse<()> {
     Ok(())
 }
 
+#[handler]
+async fn get_candidates(res: &mut Response) -> AppResponse<()> {
+    let candidates = vec![
+        "Alice".to_string(),
+        "Bob".to_string(),
+        "Charlie".to_string(),
+        "David".to_string(),
+    ];
+    res.render(Json(candidates));
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
-    let router = Router::new().get(hello_world);
+    tracing_subscriber::fmt().init();
 
+    let router = Router::new().get(hello_world);
+    let create_candidate_route = Router::with_path("/candidates").get(get_candidates);
+    let app_router = Router::new().push(router).push(create_candidate_route);
+    let service = Service::new(app_router).hoop(Logger::new());
     let acceptor = TcpListener::new("127.0.0.1:5800").bind().await;
-    Server::new(acceptor).serve(router).await;
+    Server::new(acceptor).serve(service).await;
 }
